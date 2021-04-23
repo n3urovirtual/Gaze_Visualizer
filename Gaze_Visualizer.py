@@ -6,7 +6,7 @@ from matplotlib import cm
 import os
 import time
 import itertools
-import csv
+
 
 #Read the raw ET file
 dataset=pd.read_csv(r'C:\Users\Christos\Desktop\Memory guided attention in cluttered scenes v.3\Experimental Tasks\Task1\ET_Data\L_17_2021_Mar_30_1821.tsv', sep='\t')
@@ -16,8 +16,6 @@ scene_folder='C:\\Users\\Christos\\Desktop\\Memory guided attention in cluttered
 #Calculate sampling rate for the entire dataset
 def sampling_rate(datafile):
     datafile['Sampling_Rate']=datafile['TIME']-datafile['TIME'].shift()
-    datafile['Cumulative_SR']=datafile['Sampling_Rate'].cumsum()
-    #sr_graph=datafile.plot.line(x='TIME', y='Sampling_Rate', figsize=(50,3))
 
     return datafile['Sampling_Rate'].describe()
 
