@@ -6,7 +6,7 @@ from matplotlib import cm
 import os
 import time
 import itertools
-
+import csv
 
 #Read the raw ET file
 dataset=pd.read_csv(r'C:\Users\Christos\Desktop\Memory guided attention in cluttered scenes v.3\Experimental Tasks\Task1\ET_Data\L_17_2021_Mar_30_1821.tsv', sep='\t')
