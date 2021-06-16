@@ -218,18 +218,6 @@ df_main_valid.plot(kind='line',x=df_main_valid['TIME_2'],y=df_main_valid['veloci
 df_main_valid['TIME_2']=df_main_valid['IS_TIME'].cumsum()
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 #List with images numbering
 high_list=[1,2,7,12,13,15,19,25,27,29,41,42,43,44,48,49,51,54,55,59,61,64,67, \
            74,76,77,84,87,88,91,94,95,100,101,112,113]
