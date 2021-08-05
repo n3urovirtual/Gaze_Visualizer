@@ -1,20 +1,52 @@
+import os
+import time
+import csv
+import itertools
 import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib import cm
-import os
-import time
-import itertools
-import csv
 
 #Read the raw ET file
 dataset=pd.read_csv('M_1_2021_Mar_13_1417.tsv', sep='\t')
-scene_folder=r'C:\Users\presi\Desktop\Memory guided attention in cluttered '\
-    'scenes v.3\Experimental Tasks\Task1\Scenes'
 
-df=dataset[['BPOGX', 'BPOGY']]
-df.to_csv('L1_datafile.tsv',sep='\t', index=False,header=False)
+
+#Specify the path to the image folder
+scene_folder=r'C:\Users\presi\Desktop\PhD\Memory guided attention in ' \
+    r'cluttered scenes v.3\Tasks\Task1\Scenes'
+
+screenSizeX = 48.5
+screenSizeY = 28
+screenResX = 1920
+screenResY = 1080
+distance = dataset['LEYEZ']*100
+dist=distance.to_numpy()
+#rounded_dist=np.round(dist)
+
+# calculate the size of a pixel in cm
+pixSizeCmX = screenSizeX/screenResX
+pixSizeCmY = screenSizeY/screenResY
+
+'''CONVERT FROM GZPT COORDS TO CARTESIAN SYSTEM COORDS'''
+# calculate the size of x and y in cm
+dataset['cmX'] = dataset['BPOGX']*pixSizeCmX
+dataset['cmY'] = dataset['BPOGY']*pixSizeCmY
+
+cmX=dataset['cmX'].to_numpy()
+cmY=dataset['cmY'].to_numpy()
+
+# convert from cm to degrees
+from math import atan, atan2, tan, pi,degrees
+
+X=cmX/dist
+Y=cmY/dist
+
+dataset['degX'] = np.arctan(X)/(pi*180)
+dataset['degY'] = np.arctan(Y)/(pi*180)
+
+
+
 
 
 #Calculate sampling rate for the entire dataset. Applied before any analysis
@@ -32,27 +64,35 @@ def cumulative_time(datafile):
     
     return datafile
 
-cumulative_time(dataset)
+cumulative_time(dataset) #example
+
 
 # Keep only samples during scene viewing (main trials)
 def keep_trials(datafile):
     global df
+    df=datafile[(datafile['USER'].astype(str).str.startswith('S'))]
     #df=datafile[(datafile['IMAGE'].astype(str).str.startswith('S')) & 
-                #(datafile['START_END']=='START')]
-    df=datafile[datafile['USER'].astype(str).str.startswith('S')]
-                
+    #            (datafile['START_END']=='START')]
+    
     return df
 
 keep_trials(dataset) #example
 
+# Split USER column into different columns based on conditions
+def split_into_cols(datafile):
+    new=datafile['USER'].str.split("_", -1, expand=True)
+    datafile['IMAGE']=new[0]
+    datafile['CLUTTER']=new[1]
+    #datafile['BLOCK']=new[2]
+    datafile['START_END']=new[3]
+    #new_2=df['IMAGE'].str.split(".",1,expand=True)
+    #new_2[0]=new_2[0].str.replace("S","", 1)
+    #new_2[0].astype(int)
+    #datafile['IMAGE']=new_2[0]
+    
+    return datafile
 
-new=df['USER'].str.split("_", -1, expand=True)
-df['IMAGE']=new[0]
-df['CLUTTER']=new[1]
-new_2=df['IMAGE'].str.split(".",1,expand=True)
-new_2[0]=new_2[0].str.replace("S","", 1)
-new_2[0].astype(int)
-df['IMAGE']=new_2[0]
+split_into_cols(df) #example
 
 
 #Keep only trials for which a valid recording exists
@@ -78,42 +118,32 @@ def convert_gaze_coords(datafile):
 
     return datafile
 
-convert_gaze_coords(df) #example
+convert_gaze_coords(dataset) #example
 
 
-#Convert gaze data from gp3 coordinates to gazepath coordinates
-def convert_gaze_coords_alt(datafile):
-    datafile['BPOGX']=datafile.loc[:,'BPOGX']*1920
-    datafile['BPOGY']=datafile.loc[:,'BPOGY']*1080
-    datafile['FPOGX']=datafile.loc[:,'FPOGX']*1920
-    datafile['FPOGY']=datafile.loc[:,'FPOGY']*1080
-    datafile['RPOGX']=datafile.loc[:,'RPOGX']*1920
-    datafile['RPOGY']=datafile.loc[:,'RPOGY']*1080
-    datafile['LPOGX']=datafile.loc[:,'LPOGX']*1920
-    datafile['LPOGY']=datafile.loc[:,'LPOGY']*1080
+# #Convert gaze data from gp3 coordinates to gazepath coordinates
+# def convert_gaze_coords_alt(datafile):
+#     datafile['BPOGX']=datafile.loc[:,'BPOGX']*1920
+#     datafile['BPOGY']=datafile.loc[:,'BPOGY']*1080
+#     datafile['FPOGX']=datafile.loc[:,'FPOGX']*1920
+#     datafile['FPOGY']=datafile.loc[:,'FPOGY']*1080
+#     datafile['RPOGX']=datafile.loc[:,'RPOGX']*1920
+#     datafile['RPOGY']=datafile.loc[:,'RPOGY']*1080
+#     datafile['LPOGX']=datafile.loc[:,'LPOGX']*1920
+#     datafile['LPOGY']=datafile.loc[:,'LPOGY']*1080
 
-    return datafile
-
-convert_gaze_coords_alt(df_valid) #example
-
-
-
-df_valid['LEYEZ']=df_valid['LEYEZ']*1000
-df_valid['REYEZ']=df_valid['REYEZ']*1000
-
-df_valid.to_csv('sub_1_memory.tsv',sep='\t',index=False)
-# def cyclopic_vision(datafile):
-#     df_main_valid['CPOGX']=(datafile['LPOGX']+datafile['RPOGX'])/2
-#     df_main_valid['CPOGY']=(datafile['LPOGY']+datafile['RPOGY'])/2
-    
 #     return datafile
 
-# cyclopic_vision(df_valid) #example
+# convert_gaze_coords_alt(df_valid) #example
 
+
+#df_valid['LEYEZ']=df_valid['LEYEZ']*1000
+#df_valid['REYEZ']=df_valid['REYEZ']*1000
+#df_valid.to_csv('sub_1_memory.tsv',sep='\t',index=False)
 
 
 #Keep samples within screen range (x-10, y-10)
-def keep_in_screen_samples(datafile, X_upper, X_lower, Y_upper, Y_lower):
+def keep_in_screen_samples(datafile, X_right, X_left, Y_upper, Y_lower):
     global d1
     
     d1=datafile[(datafile['BPOGX']<X_upper) & (datafile['BPOGX']>X_lower) & \
@@ -121,25 +151,17 @@ def keep_in_screen_samples(datafile, X_upper, X_lower, Y_upper, Y_lower):
     
     return d1, d1.BPOGX.min(), d1.BPOGX.max(), d1.BPOGY.min(), d1.BPOGY.max()
 
-keep_in_screen_samples(df, 950, -950, 530, -530) #example
-
-#Keep gaze samples with valid flag
-fixation_valid_dataset=dataset.query("FPOGV==1")
-best_valid_dataset=dataset.query("BPOGV==1")
-
+keep_in_screen_samples(df_valid, 950, -950, 530, -530) #example
 
 
 #Apply savitzky-golay filter
 from scipy.signal import savgol_filter
-bpogx=df_main_valid['BPOGX']
-bpogy=df_main_valid['BPOGY']
-df_main_valid['SAV_BPOGX']=savgol_filter(bpogx, 11, 2)
-df_main_valid['SAV_BPOGY']=savgol_filter(bpogy, 11, 2)
+bpogx=df_valid['BPOGX']
+bpogy=df_valid['BPOGY']
+df_valid['SAV_BPOGX']=savgol_filter(bpogx, 11, 2)
+df_valid['SAV_BPOGY']=savgol_filter(bpogy, 11, 2)
 
 
-x=df_main_valid['SAV_BPOGX'].to_numpy()
-y=df_main_valid['SAV_BPOGY'].to_numpy()
-sr=df_main_valid['Sampling_Rate'].to_numpy()
 
 #Pixels to radians-degrees
 from math import atan, atan2, tan, pi,degrees
@@ -149,14 +171,7 @@ screen_size_in_rad=2*atan(Size/(2*Distance))
 screen_in_deg=screen_size_in_rad* (180/pi)
 
 
-
-
-screen_size=48.5
-viewing_distance=60
-screen_resolution=1920
-px2deg=degrees(atan2(.5 * screen_size, viewing_distance)) / (.5 * screen_resolution)
-
-def deg_per_pixel(screen_size, viewing_distance, screen_resolution):
+def px2deg(screen_size, viewing_distance, screen_resolution):
     """Determine `px2deg` factor for EyegazeClassifier
     Parameters
     ----------
@@ -170,59 +185,61 @@ def deg_per_pixel(screen_size, viewing_distance, screen_resolution):
     return degrees(atan2(.5 * screen_size, viewing_distance)) / \
         (.5 * screen_resolution)
 
+screen_size=48.5
+viewing_distance=60
+screen_resolution=1920
+px2deg(screen_size, viewing_distance, screen_resolution) #example
 
-#def _get_velocities(self, data):
+
+'''FORMULA BY DEMNOVARP'''
+def _get_velocities(data):
     # euclidean distance between successive coordinate samples
     # no entry for first datapoint!
-    
-velocities = (np.diff(x) ** 2 + np.diff(y) ** 2) ** 0.5
+    x=df_main_valid['SAV_BPOGX'].to_numpy()
+    y=df_main_valid['SAV_BPOGY'].to_numpy()
+    sr=df_main_valid['Sampling_Rate'].to_numpy()
+    velocities = (np.diff(x) ** 2 + np.diff(y) ** 2) ** 0.5
     # convert from px/sample to deg/s
-velocities *= px2deg * sr
+    velocities *= px2deg * sr
     #turn velocities
-df_main_valid['Distance']=((df_main_valid['SAV_BPOGX']-df_main_valid['SAV_BPOGX'].shift())**2 + (df_main_valid['SAV_BPOGY']-df_main_valid['SAV_BPOGY'].shift())**2)**0.5
-df_main_valid['IS_TIME']=df_main_valid['TIME']-df_main_valid['TIME'].shift()
-df_main_valid['IS_TIME']=df_main_valid['IS_TIME']/1000
 
 
-df_main_valid['Velocity']= df_main_valid['Distance']/df_main_valid['IS_TIME']
-
-
+'''FORMULA BY EDWIN'''
 intdist= (np.diff(x)**2 + np.diff(y)**2)**0.5
 # get inter-sample times
 inttime = np.diff(time)
 # recalculate inter-sample times to seconds
-#inttime = inttime / 1000.0
-
+inttime = inttime / 1000.0
 vel = intdist / inttime
 acc = np.diff(vel)
 
 
-distance=df_main_valid['Distance'].to_numpy()
+'''FORMULA BY ME based on EDWIN'S code '''
+dataset['Distance']=((dataset['BPOGX'].diff())**2 + \
+                           (dataset['BPOGY'].diff())**2)**0.5
+dataset['Time_in_seconds']=dataset['TIME'].diff()
+dataset['Time_in_milliseconds']=dataset['Time_in_seconds']/1000.0
+dataset['Velocity_in_px']= dataset['Distance']/dataset['Time_in_seconds']
+dataset['Velocity_in_deg']= dataset['Velocity_in_px']*0.025
+dataset['Acceleration_in_px']=dataset['Velocity_in_px'].diff()/ \
+    dataset['Time_in_seconds']
+dataset['Acceleration_in_deg']=dataset['Velocity_in_deg'].diff()/ \
+    dataset['Time_in_seconds']
 
-from math import atan,pi
-radians=2*np.arctan(distance/(2*2400))
-degrees=radians*(180/pi)
-
-
-df_main_valid['velocity']=degrees/df_main_valid['IS_TIME']
-
-df_main_valid['acceleration']=df_main_valid['velocity']-df_main_valid['velocity'].shift()/df_main_valid['IS_TIME']
-
-unphysiological=df_main_valid.velocity[df_main_valid.velocity>1000]
+unphysiological=dataset.Velocity_in_deg[dataset.Velocity_in_deg>1000]
 
 saccade_filter=df_main_valid.velocity[df_main_valid.velocity>35]
 
-df_main_valid.plot(kind='line',x=df_main_valid['TIME_2'],y=df_main_valid['velocity'])
 
 
-df_main_valid['TIME_2']=df_main_valid['IS_TIME'].cumsum()
-
+                    " " " VISUALIZATION LIBRARY " " "
+-------------------------------------------------------------------------------
 
 #List with images numbering
-high_list=[1,2,7,12,13,15,19,25,27,29,41,42,43,44,48,49,51,54,55,59,61,64,67, \
-           74,76,77,84,87,88,91,94,95,100,101,112,113]
-low_list=[3,6,10,17,21,23,28,33,35,38,39,40,46,50,52,58,60,62,63,70,72,73,75, \
-          78,80,82,89,90,92,97,99,102,103,104,105,108]
+high_list=[1,2,7,12,13,15,19,25,27,29,41,42,43,44,48,49,51,54,55,59,61, \
+           64,67,74,76,77,84,87,88,91,94,95,100,101,112,113]
+low_list=[3,6,10,17,21,23,28,33,35,38,39,40,46,50,52,58,60,62,63,70,72, \
+          73,75,78,80,82,89,90,92,97,99,102,103,104,105,108]
 
 img_id=[1,2,7,12,13,15,19,25,27,29,41,42,43,44,48,49,51,54,55,59,61,64,67, 
       74,76,77,84,87,88,91,94,95,100,101,112,113,3,6,10,17,21,23,28,33,
@@ -255,6 +272,25 @@ for j, i in itertools.product(img_id, range(0,4)):
     print(j,i)
     plt.close()
     
+
+
+#Draw BPOG scatterplot
+for j in img_id:
+    filtered=d1.query("IMAGE.str.startswith('S"+str(j)+"').values")
+    x=filtered['BPOGX']
+    y=filtered['BPOGY']
+    fig, ax = plt.subplots(figsize=(20, 11))
+    ax.scatter(x,y,zorder=1,marker='o', color='lime',alpha=0.5)
+    abs_path=scene_folder
+    img = plt.imread(abs_path+"\S"+str(j)+".jpg")
+    plt.imshow(img, extent=[-960, 960, -540, 540],aspect='auto')
+    plt.xlabel('X coordinates (in pixels)', size=20)
+    plt.ylabel('Y coordinates (in pixels)', size=20)
+    plt.title('Scatterplot of Raw Gaze Data (BPOG) for Image '+str(j), size=30)
+    #plt.text(-540,0,'Image'+str(j), size=25)
+    plt.show()
+    plt.close()
+
 
 #Draw fixation map
 for j, i in itertools.product(low_list, range(0,4)):
@@ -295,12 +331,14 @@ for j, i in itertools.product(low_list, range(0,4)):
     plt.imshow(img, zorder=0, extent=[-960, 960, -540, 540],aspect='auto')
     for i in range(len(fix_dur)):
         ax.annotate(str(i+1),
-        xy=(fix_dur.iloc[i],fix_dur.iloc[i]),
-        xytext=(x.iloc[i], y.iloc[i]),
-        fontsize=30,
-        color='black',
-        ha='center',
-        va='center')
+                    xy=(fix_dur.iloc[i],
+                        fix_dur.iloc[i]),
+                    xytext=(x.iloc[i], 
+                            y.iloc[i]),
+                    fontsize=30,
+                    color='black',
+                    ha='center',
+                    va='center')
     plt.show()
     plt.close()
 
