@@ -46,9 +46,6 @@ dataset['degX'] = np.arctan(X)/(pi*180)
 dataset['degY'] = np.arctan(Y)/(pi*180)
 
 
-
-
-
 #Calculate sampling rate for the entire dataset. Applied before any analysis
 def sampling_rate(datafile):
     datafile['Sampling_Rate']=datafile['TIME'].diff()
