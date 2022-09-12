@@ -1,7 +1,6 @@
 # <img src = "https://github.com/n3urovirtual/Gaze_Visualizer/blob/main/Images/Gaze_vis_logo.jpg" width = 400, height = 225>
- This project helps you produce gravisualize eye-tracking data which have been recorded with the Gazepoint GP3-HD (or GP3) eye-tracker. 
-
-Examples of the visualizations you can create include: 1) **fixation maps**, 2) **scanpaths**, and 3) **heatmaps**.
+ This project helps you produce graphs that are commonly used in eye movement studies, such as **fixation maps**, **scanpaths**, and **heatmaps**. The project was
+made with GazePoint (GP3/GP3 HD) eye-tracker in mind, but it can be easily used with eye-tracking data recorded by other eye-trackers. 
 
 ## 1) Fixation Map
 Circles represent fixation points and circles' diameter are proportional to fixations' duration (e.g., the longer the fixation, the larger the circle). This type of visualization is used to understand where a participant looked at and for how long.
