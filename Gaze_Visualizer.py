@@ -4,6 +4,7 @@ import seaborn as sns
 import pandas as pd
 import numpy as np
 
+
 # Draw fixation map
 def create_fixation_map(image, fixations, image_extent = [-960, 960, -540, 540]):
     fig, ax = plt.subplots()
