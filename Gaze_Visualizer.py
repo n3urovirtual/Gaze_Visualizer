@@ -21,7 +21,7 @@ def create_fixation_map(image, fixations, image_extent = [-960, 960, -540, 540])
         plt.scatter(row['x'],
                     row['y'],
                     c = "lime",
-                    edgecolors = 'white',
+                    edgecolors = 'black',
                     marker = "o",
                     s = size*10,
                     alpha = 0.5)
@@ -45,14 +45,14 @@ def create_scanpath(image, scanpath,
                    y = scanpath['y'],
                    s = scanpath['duration']*10,
                    c = 'lime',
-                   edgecolors = 'white',
+                   edgecolors = 'black',
                    alpha = scanpath['duration']/scanpath['duration'].max())
     else:
         # Create a scatterplot of the scanpath
         ax.scatter(x = scanpath['x'],
                    y = scanpath['y'],
                    c = 'lime',
-                   edgecolors = 'white')
+                   edgecolors = 'black')
 
     # Connect the fixations with lines
     ax.plot(scanpath['x'],
@@ -83,10 +83,10 @@ def create_heatmap(image, fixations, image_extent = [-960, 960, -540, 540]):
                 y = fixations['y'],
                 ax = ax,
                 cut = 0,
-                #bw_method = 'scott',
-                #bw_adjust = 1,
+                bw_method = 0.3,
+                bw_adjust = 0.7,
                 cbar = False,
-                levels = 100,
+                levels = 110,
                 shade = True,
                 cmap = cm.jet,
                 alpha = 0.3)
