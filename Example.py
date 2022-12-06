@@ -23,7 +23,7 @@ scanpath_figure = create_scanpath(image_scan, scanpath)
 
 # Load the image and the fixations
 image_heat = plt.imread(r'Images/sports_website.png')
-fixations = pd.DataFrame({'x': np.random.randint(-700,700,size=30),
-                          'y': np.random.randint(-400,400,size=30)})
+fixations = pd.DataFrame({'x': np.random.randint(-960,960,size=30),
+                          'y': np.random.randint(-540,540,size=30)})
 # Visualize the heatmap on the image
 heatmap_figure = create_heatmap(image_heat, fixations)
