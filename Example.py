@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
+import pandas as pd
 import numpy as np
+from Gaze_Visualizer import create_fixation_map, create_heatmap, create_scanpath
 
 # Load the image and the fixations
 image_fix = plt.imread(r'Images/square.JPG')
