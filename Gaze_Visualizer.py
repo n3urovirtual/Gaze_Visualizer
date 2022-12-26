@@ -73,7 +73,7 @@ def create_scanpath(image, scanpath,
 
 # Draw heatmap
 def create_heatmap(image, fixations, image_extent = [-960, 960, -540, 540]):
-    fig, ax = plt.subplots(figsize=(25, 14), dpi = 150)
+    fig, ax = plt.subplots(dpi = 150)
 
     # Display the image
     ax.imshow(image, zorder=0, extent = image_extent, aspect='auto')
@@ -83,8 +83,8 @@ def create_heatmap(image, fixations, image_extent = [-960, 960, -540, 540]):
                 y = fixations['y'],
                 ax = ax,
                 cut = 0,
-                bw_method = 0.3,
-                bw_adjust = 0.7,
+                bw_method = 0.4,
+                bw_adjust = 0.6,
                 cbar = False,
                 levels = 110,
                 shade = True,
