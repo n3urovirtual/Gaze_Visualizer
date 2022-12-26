@@ -3,7 +3,7 @@
 
 ## 1) Fixation Map
 Fixations are overlaid on top of an image using circles and the diameter of the circle reflects the duration of the fixation, such that longer the fixation, the larger the circle. Fixation maps are typically used to visualize where a person looked at while viewing a particular image and for how long.
-# <img src = "https://github.com/n3urovirtual/Gaze_Visualizer/blob/main/Images/fix_map_figure.png" width = 700, height = 450>
+# <img src = "https://github.com/n3urovirtual/Gaze_Visualizer/blob/main/Images/fixation_map_figure.png" width = 700, height = 450>
 
 ## 2) Scanpath
 Sequences of fixations are connected with lines, thus providing information about the trajectories (paths) of the eyes when scanning the visual field. This type of visualization is used to understand the time-course of gaze behavior, i.e., what information was looked at first, second etc. as well as to provide valuable insight into the visual scanning pattern adopted by the user/participant. 
